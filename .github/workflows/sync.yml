@@ -1,0 +1,48 @@
+name: 豆瓣数据同步到Notion
+
+on:
+  schedule:
+    # 每天北京时间0点执行（UTC时间16点）
+    - cron: '0 16 * * *'
+  workflow_dispatch:  # 支持手动触发
+    inputs:
+      sync_type:
+        description: '同步类型'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+        - both
+        - movie
+        - book
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置Python环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: 同步豆瓣数据到Notion
+      env:
+        NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        DOUBAN_NAME: ${{ secrets.DOUBAN_NAME }}
+        AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+        MOVIE_DATABASE_ID: ${{ secrets.MOVIE_DATABASE_ID }}
+        BOOK_DATABASE_ID: ${{ secrets.BOOK_DATABASE_ID }}
+      run: |
+        python -m douban2notion \
+          --movie-db "$MOVIE_DATABASE_ID" \
+          --book-db "$BOOK_DATABASE_ID" \
+          --type "${{ github.event.inputs.sync_type || 'both' }}" 

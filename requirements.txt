@@ -1,0 +1,5 @@
+requests
+notion-client
+retrying
+pendulum
+python-dotenv
