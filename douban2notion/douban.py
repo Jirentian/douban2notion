@@ -34,16 +34,20 @@ headers = {
 
 
 @retry(stop_max_attempt_number=3, wait_fixed=5000)
-def fetch_subjects(user, subject_type, status):
+def fetch_subjects(user, type_, status):
     """从豆瓣获取用户的电影或书籍数据"""
+    if not AUTH_TOKEN:
+        print("警告: AUTH_TOKEN 未设置，可能会导致请求失败")
+    
     offset = 0
     page = 0
     url = f"https://{DOUBAN_API_HOST}/api/v2/user/{user}/interests"
+    total = 0
     results = []
     
     while True:
         params = {
-            "type": subject_type,
+            "type": type_,
             "count": 50,
             "status": status,
             "start": offset,
@@ -62,10 +66,14 @@ def fetch_subjects(user, subject_type, status):
             offset = page * 50
         else:
             print(f"请求失败: {response.status_code}")
+            print(f"响应内容: {response.text}")
+            print(f"请求URL: {url}")
+            print(f"请求参数: {params}")
+            print(f"请求头: {headers}")
             break
     
     if results:
-        print(f"获取 {subject_type} ({status}) {len(results)} 条记录")
+        print(f"获取 {type_} ({status}) {len(results)} 条记录")
     
     return results
 
