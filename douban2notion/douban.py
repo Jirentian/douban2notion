@@ -22,7 +22,7 @@ load_dotenv()
 
 # 豆瓣API配置
 DOUBAN_API_HOST = os.getenv("DOUBAN_API_HOST", "frodo.douban.com")
-DOUBAN_API_KEY = os.getenv("DOUBAN_API_KEY")
+DOUBAN_API_KEY = os.getenv("DOUBAN_API_KEY", "0ac44ae016490db2204ce0a042db2916")
 AUTH_TOKEN = os.getenv("AUTH_TOKEN")
 
 headers = {
